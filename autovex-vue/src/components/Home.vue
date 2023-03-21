@@ -3,10 +3,15 @@ import { onMounted, computed } from "vue";
 import { useAuthStore } from "../stores/auth";
 import { ref } from "vue";
 
+const adjustTimestamp = ref(0);
 const currentTimeNow = getCurrentTimeObject();
+const currentDate = ref(currentTimeNow.date);
+const currentMonth = ref(currentTimeNow.month);
+const currentYear = ref(currentTimeNow.year);
 const currentHour = ref(currentTimeNow.hour);
 const currentMinute = ref(currentTimeNow.minute);
 const currentSecond = ref(currentTimeNow.second);
+
 const error = ref(null);
 const errorMessage = "Your givent time is invalid, please try again";
 
@@ -33,6 +38,9 @@ const displayCurrentTime = computed({
   },
 });
 
+/**
+ * update the current time using timestamp difference to recalculate
+ */
 function updateTime() {
   const givenHour = parseInt(document.getElementById("hour").value);
   const givenMinute = parseInt(document.getElementById("minute").value);
@@ -49,10 +57,9 @@ function updateTime() {
     resetInputFields();
     return;
   }
+  const adjustTime = `${currentDate.value} ${currentMonth.value} ${currentYear.value} ${givenHour}:${givenMinute}:${givenSecond}`;
 
-  currentHour.value = givenHour;
-  currentMinute.value = givenMinute;
-  currentSecond.value = givenSecond;
+  adjustTimestamp.value = Date.parse(adjustTime) - Date.now();
 }
 
 // reset the input fields
@@ -73,9 +80,13 @@ function refreshTime() {
   )}:${formatTime(timeObj.second)}`;
 }
 
-function getCurrentTimeObject(givenTime = "") {
-  const currentTime = new Date();
+function getCurrentTimeObject() {
+  const currentTimestamp = Date.now() + adjustTimestamp.value;
+  const currentTime = new Date(currentTimestamp);
   return {
+    date: currentTime.getDate(),
+    month: currentTime.toLocaleString("default", { month: "long" }),
+    year: currentTime.getFullYear(),
     hour: currentTime.getHours(),
     minute: currentTime.getMinutes(),
     second: currentTime.getSeconds(),
