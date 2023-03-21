@@ -34,23 +34,29 @@ const displayCurrentTime = computed({
 });
 
 function updateTime() {
-  const givenHour = document.getElementById("hour").value;
-  const givenMinute = document.getElementById("minute").value;
-  const givenSecond = document.getElementById("second").value;
+  const givenHour = parseInt(document.getElementById("hour").value);
+  const givenMinute = parseInt(document.getElementById("minute").value);
+  const givenSecond = parseInt(document.getElementById("second").value);
 
   if (isNaN(givenHour) || isNaN(givenMinute) || isNaN(givenSecond)) {
     error.value = errorMessage;
+    resetInputFields();
+    return;
   }
 
   if (givenHour > 24 || givenMinute > 60 || givenSecond > 60) {
     error.value = errorMessage;
+    resetInputFields();
+    return;
   }
 
   currentHour.value = givenHour;
   currentMinute.value = givenMinute;
   currentSecond.value = givenSecond;
+}
 
-  // reset the input fields
+// reset the input fields
+function resetInputFields() {
   setTimeout(() => {
     document.getElementById("hour").value = 0;
     document.getElementById("minute").value = 0;
@@ -109,9 +115,14 @@ function formatTime(time) {
                   }}</span>
                 </p>
                 <br />
-                <p class="text-center">The current time is {{ displayCurrentTime }}.</p>
+                <p class="text-center">
+                  The current time is {{ displayCurrentTime }}.
+                </p>
                 <br />
                 <br />
+                <p v-if="error" class="text-red-600 text-center mb-8">
+                  {{ error }}
+                </p>
                 <div class="flex flex-row justify-center gap-4">
                   <div>
                     <input
@@ -120,6 +131,7 @@ function formatTime(time) {
                       min="0"
                       max="24"
                       placeholder="00"
+                      value="0"
                       class="text-base font-normal leading-relaxed block w-full border rounded px-4 py-3.5 transition focus:outline-none focus:ring appearance-none placeholder-gray-500 border-gray bg-white mb-4"
                     />
                   </div>
@@ -130,6 +142,7 @@ function formatTime(time) {
                       min="0"
                       max="60"
                       placeholder="00"
+                      value="0"
                       class="text-base font-normal leading-relaxed block w-full border rounded px-4 py-3.5 transition focus:outline-none focus:ring appearance-none placeholder-gray-500 border-gray bg-white mb-4"
                     />
                   </div>
@@ -140,20 +153,20 @@ function formatTime(time) {
                       min="0"
                       max="60"
                       placeholder="00"
+                      value="0"
                       class="text-base font-normal leading-relaxed block w-full border rounded px-4 py-3.5 transition focus:outline-none focus:ring appearance-none placeholder-gray-500 border-gray bg-white mb-4"
                     />
-                  </div>                  
-                  <p v-if="error" style="color: red">{{ error }}</p>
+                  </div>
                 </div>
                 <div class="mt-8 text-center">
-                    <button
-                      type="submit"
-                      class="button bg-blue-700 text-white py-4 px-8 rounded-full hover:-translate-y-1.5 mx-auto"
-                      @click="updateTime"
-                    >
-                      Päivitysaika
-                    </button>
-                  </div>
+                  <button
+                    type="submit"
+                    class="button bg-blue-700 text-white py-4 px-8 rounded-full hover:-translate-y-1.5 mx-auto"
+                    @click="updateTime"
+                  >
+                    Päivitysaika
+                  </button>
+                </div>
               </div>
               <div v-else>
                 <p>It required to be login</p>
